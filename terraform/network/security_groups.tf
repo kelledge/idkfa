@@ -1,11 +1,10 @@
 resource "aws_security_group" "main" {
-  name        = "nodes.z.petropower.com"
-  vpc_id      = "vpc-59c6663c"
-  description = "Security group for nodes"
+  name        = "main"
+  vpc_id      = "${aws_vpc.main.id}"
+  description = "Main security group"
 
   tags = {
-    KubernetesCluster = "z.petropower.com"
-    Name              = "nodes.z.petropower.com"
+    Name = "main"
   }
 }
 

@@ -35,7 +35,7 @@ resource "aws_internet_gateway" "main" {
 */
 resource "aws_subnet" "public-a" {
   vpc_id            = "${aws_vpc.main.id}"
-  cidr_block        = "10.0.32.0/19"
+  cidr_block        = "10.0.0.0/19"
   availability_zone = "us-east-1a"
 
   tags = {
@@ -51,9 +51,27 @@ resource "aws_route_table_association" "public-a" {
 /*
 *
 */
-resource "aws_subnet" "db-a" {
+resource "aws_subnet" "private-a" {
   vpc_id            = "${aws_vpc.main.id}"
   cidr_block        = "10.0.32.0/19"
+  availability_zone = "us-east-1a"
+
+  tags = {
+    Name = "main"
+  }
+}
+
+resource "aws_route_table_association" "private-a" {
+  subnet_id      = "${aws_subnet.private-a.id}"
+  route_table_id = "${aws_route_table.private.id}"
+}
+
+/*
+*
+*/
+resource "aws_subnet" "db-a" {
+  vpc_id            = "${aws_vpc.main.id}"
+  cidr_block        = "10.0.64.0/19"
   availability_zone = "us-east-1a"
 
   tags = {
@@ -71,8 +89,8 @@ resource "aws_route_table_association" "db-a" {
 */
 resource "aws_subnet" "db-b" {
   vpc_id            = "${aws_vpc.main.id}"
-  cidr_block        = "10.0.32.0/19"
-  availability_zone = "us-east-1a"
+  cidr_block        = "10.0.96.0/19"
+  availability_zone = "us-east-1b"
 
   tags = {
     Name = "main"
