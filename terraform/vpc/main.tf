@@ -10,6 +10,14 @@ provider "aws" {
   region     = "us-east-1"
 }
 
+output "vpc_id" {
+  value = "${aws_vpc.main.id}"
+}
+
+output "route_table_private_id" {
+  value = "${aws_route_table.private.id}"
+}
+
 resource "aws_vpc" "main" {
   cidr_block       = "10.0.0.0/16"
 
@@ -64,52 +72,4 @@ resource "aws_subnet" "private-a" {
 resource "aws_route_table_association" "private-a" {
   subnet_id      = "${aws_subnet.private-a.id}"
   route_table_id = "${aws_route_table.private.id}"
-}
-
-/*
-*
-*/
-resource "aws_subnet" "db-a" {
-  vpc_id            = "${aws_vpc.main.id}"
-  cidr_block        = "10.0.64.0/19"
-  availability_zone = "us-east-1a"
-
-  tags = {
-    Name = "main"
-  }
-}
-
-resource "aws_route_table_association" "db-a" {
-  subnet_id      = "${aws_subnet.db-a.id}"
-  route_table_id = "${aws_route_table.private.id}"
-}
-
-/*
-*
-*/
-resource "aws_subnet" "db-b" {
-  vpc_id            = "${aws_vpc.main.id}"
-  cidr_block        = "10.0.96.0/19"
-  availability_zone = "us-east-1b"
-
-  tags = {
-    Name = "main"
-  }
-}
-
-resource "aws_route_table_association" "db-b" {
-  subnet_id      = "${aws_subnet.db-b.id}"
-  route_table_id = "${aws_route_table.private.id}"
-}
-
-/*
-*
-*/
-resource "aws_db_subnet_group" "default" {
-  name       = "main"
-  subnet_ids = ["${aws_subnet.db-a.id}", "${aws_subnet.db-b.id}"]
-
-  tags {
-    Name = "main"
-  }
 }
