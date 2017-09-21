@@ -17,8 +17,16 @@ resource "aws_security_group_rule" "https" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
+resource "aws_security_group_rule" "ssh" {
+  type              = "ingress"
+  security_group_id = "${aws_security_group.main.id}"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
 
-resource "aws_security_group_rule" "master-egress" {
+resource "aws_security_group_rule" "master_egress" {
   type              = "egress"
   security_group_id = "${aws_security_group.main.id}"
   from_port         = 0
