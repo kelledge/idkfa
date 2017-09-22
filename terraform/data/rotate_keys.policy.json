@@ -1,0 +1,18 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "iam:ListAccessKeys",
+        "iam:GetAccessKeyLastUsed",
+        "iam:DeleteAccessKey",
+        "iam:CreateAccessKey",
+        "iam:UpdateAccessKey"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:iam::${account_id}:user/$${aws:username}"
+      ]
+    }
+  ]
+}
