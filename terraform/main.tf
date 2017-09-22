@@ -1,18 +1,41 @@
-module "iam" {
+module "kelledge" {
   source = "./iam"
+  username = "kelledge"
+  pgp_key = "${file("${path.module}/user.gpg.pub")}"
 }
 
-output "password" {
-  value = "${module.iam.password}"
+output "kelledge_password" {
+  value = "${module.kelledge.password}"
 }
 
-output "secret" {
-  value = "${module.iam.secret}"
+output "kelledge_access_key_id" {
+  value = "${module.kelledge.access_key_id}"
 }
 
-output "key_fingerprint" {
-  value = "${module.iam.key_fingerprint}"
+output "kelledge_access_key_secret" {
+  value = "${module.kelledge.access_key_secret}"
 }
+
+
+module "jsalisbury" {
+  source = "./iam"
+  username = "jsalisbury"
+  pgp_key = "${file("${path.module}/user.gpg.pub")}"
+}
+
+output "jsalisbury_password" {
+  value = "${module.jsalisbury.password}"
+}
+
+output "jsalisbury_access_key_id" {
+  value = "${module.jsalisbury.access_key_id}"
+}
+
+output "jsalisbury_access_key_secret" {
+  value = "${module.jsalisbury.access_key_secret}"
+}
+
+
 
 
 /*
