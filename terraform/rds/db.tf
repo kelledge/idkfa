@@ -52,7 +52,7 @@ resource "aws_db_instance" "default" {
 /*
 *
 */
-resource "aws_subnet" "db-a" {
+resource "aws_subnet" "db_a" {
   vpc_id            = "${var.vpc_id}"
   cidr_block        = "10.0.64.0/19"
   availability_zone = "us-east-1a"
@@ -62,15 +62,15 @@ resource "aws_subnet" "db-a" {
   }
 }
 
-resource "aws_route_table_association" "db-a" {
-  subnet_id      = "${aws_subnet.db-a.id}"
+resource "aws_route_table_association" "db_a" {
+  subnet_id      = "${aws_subnet.db_a.id}"
   route_table_id = "${var.route_table_id}"
 }
 
 /*
 *
 */
-resource "aws_subnet" "db-b" {
+resource "aws_subnet" "db_b" {
   vpc_id            = "${var.vpc_id}"
   cidr_block        = "10.0.96.0/19"
   availability_zone = "us-east-1b"
@@ -80,8 +80,8 @@ resource "aws_subnet" "db-b" {
   }
 }
 
-resource "aws_route_table_association" "db-b" {
-  subnet_id      = "${aws_subnet.db-b.id}"
+resource "aws_route_table_association" "db_b" {
+  subnet_id      = "${aws_subnet.db_b.id}"
   route_table_id = "${var.route_table_id}"
 }
 
@@ -90,7 +90,7 @@ resource "aws_route_table_association" "db-b" {
 */
 resource "aws_db_subnet_group" "default" {
   name       = "main"
-  subnet_ids = ["${aws_subnet.db-a.id}", "${aws_subnet.db-b.id}"]
+  subnet_ids = ["${aws_subnet.db_a.id}", "${aws_subnet.db_b.id}"]
 
   tags {
     Name = "main"
