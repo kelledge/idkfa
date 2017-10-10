@@ -10,6 +10,28 @@ enable password policy
 terraform output secret | base64 -d | gpg --decrypt
 
 /*
+{
+    "Effect": "Allow",
+    "Action": [
+        "iam:*AccessKey*",
+        "iam:*Password",
+        "iam:*MFADevice*",
+        "iam:UpdateLoginProfile"
+    ],
+    "Resource": "arn:aws:iam::*:user/${aws:username}"
+},
+{
+    "Effect": "Allow",
+    "Action": [
+        "iam:CreateVirtualMFADevice",
+        "iam:DeleteVirtualMFADevice"
+    ],
+    "Resource": "arn:aws:iam::*:mfa/${aws:username}"
+},
+
+*/
+
+/*
 
   {
       "Version": "2012-10-17",
