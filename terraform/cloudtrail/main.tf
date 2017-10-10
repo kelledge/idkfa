@@ -1,42 +1,36 @@
-resource "aws_cloudtrail" "foobar" {
-  name                          = "tf-trail-foobar"
-  s3_bucket_name                = "${aws_s3_bucket.foo.id}"
-  s3_key_prefix                 = "prefix"
-  include_global_service_events = false
+/*
+* How to make sure that these logs are not generally viewable? Security audit
+* role read only perhaps?
+*/
+
+provider "aws" {
+  region     = "us-east-1"
 }
 
-resource "aws_s3_bucket" "foo" {
-  bucket        = "tf-test-trail"
-  force_destroy = true
-
-  policy = <<POLICY
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AWSCloudTrailAclCheck",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "cloudtrail.amazonaws.com"
-            },
-            "Action": "s3:GetBucketAcl",
-            "Resource": "arn:aws:s3:::tf-test-trail"
-        },
-        {
-            "Sid": "AWSCloudTrailWrite",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "cloudtrail.amazonaws.com"
-            },
-            "Action": "s3:PutObject",
-            "Resource": "arn:aws:s3:::tf-test-trail/*",
-            "Condition": {
-                "StringEquals": {
-                    "s3:x-amz-acl": "bucket-owner-full-control"
-                }
-            }
-        }
-    ]
+resource "aws_cloudtrail" "cloudtrail" {
+  name                          = "cloudtrail"
+  s3_bucket_name                = "${aws_s3_bucket.cloudtrail.id}"
+  s3_key_prefix                 = "cloudtrail"
+  include_global_service_events = true
+  is_multi_region_trail         = true
+  enable_logging                = true // set to false to pause logging
+  // kms_key_id
 }
-POLICY
+
+resource "aws_s3_bucket" "cloudtrail" {
+  bucket        = "cloudtrail.kaak.us"
+  acl           = "private"
+  force_destroy = true // Consider if this is really needed. Will kill all logs on destroy
+
+  policy = "${file("${path.module}/cloudtrail.policy.json")}"
+
+  lifecycle_rule {
+    id      = "cloudtrail"
+    prefix  = "cloudtrail/"
+    enabled = true
+
+    expiration {
+      days = 7
+    }
+  }
 }
