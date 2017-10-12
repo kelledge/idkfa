@@ -1,0 +1,8 @@
+- hosts: type_aws_eip
+  remote_user: ubuntu
+  vars:
+    ansible_ssh_private_key_file: "./id_rsa"
+    ansible_python_interpreter: "/usr/bin/python3"
+  tasks:
+    - name: Echo a hello message
+      command: echo hello
