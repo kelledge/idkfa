@@ -12,9 +12,10 @@ terraform {
 
 data "terraform_remote_state" "network" {
   backend = "s3"
+
   config {
     bucket = "state.kaak.us"
-    key    = "network/terraform.tfstate"
+    key    = "terraform/network.tfstate"
     region = "us-east-1"
   }
 }
@@ -41,19 +42,21 @@ resource "aws_key_pair" "bastion" {
 }
 
 module "bastion" {
-  source             = "../../modules/bastion"
+  source = "../../modules/bastion"
 
-  instance_type   = "t2.micro"
-  ami_id          = "${data.aws_ami.ubuntu.image_id}"
-  key_name        = "${aws_key_pair.bastion.key_name}"
+  instance_type = "t2.micro"
+  ami_id        = "${data.aws_ami.ubuntu.image_id}"
+  key_name      = "${aws_key_pair.bastion.key_name}"
 
-  vpc_id          = "${data.terraform_remote_state.network.aws_vpc.main.id}"
-  subnet_id       = "subnet-325d4a68"
-  // subnet_id       = "${data.terraform_remote_state.network.external_subnets[0]}"
-  security_groups = "sg-80418df2"
-  //security_groups = "${data.terraform_remote_state.network.aws_vpc.main.id}"
+  vpc_id    = "${data.terraform_remote_state.network.vpc_id}"
+  subnet_id = "${data.terraform_remote_state.network.external_subnets[0]}"
 
-  environment     = "ci"
+  security_groups = "${join(",", list(
+    data.terraform_remote_state.network.ssh_sg_id,
+    data.terraform_remote_state.network.intranet_sg_id
+  ))}"
+
+  environment = "ci"
 }
 
 output "external_ip" {

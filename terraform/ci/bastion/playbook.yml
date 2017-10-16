@@ -1,8 +1,68 @@
-- hosts: type_aws_eip
+- hosts: bastion
   remote_user: ubuntu
+  become: yes
+  become_user: root
+  become_method: sudo
   vars:
     ansible_ssh_private_key_file: "./id_rsa"
     ansible_python_interpreter: "/usr/bin/python3"
   tasks:
-    - name: Echo a hello message
-      command: echo hello
+    - name: Add Docker repository key
+      apt_key:
+        id: 0EBFCD88
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+        state: present
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+
+    - name: Install zsh
+      apt:
+        name: zsh
+
+    - name: Install tmux
+      apt:
+        name: tmux
+
+    - name: Make sure we have a 'wheel' group
+      group:
+        name: wheel
+        state: present
+
+    - name: Allow 'wheel' group to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+
+    - name: Add kelledge to wheel group
+      user:
+        name: kelledge
+        groups: wheel
+        append: yes
+        shell: '/usr/bin/zsh'
+        createhome: yes
+        state: present
+
+    - name: Set up authorized keys for kelledge
+      authorized_key:
+        user: kelledge
+        key: "{{item}}"
+      with_file:
+        - /home/kelledge/.ssh/id_kelledge.pub
+
+    - name: Initialize zsh
+      file:
+        path: /home/kelledge/.zshrc
+        owner: kelledge
+        group: kelledge
+        mode: 0644
+        state: touch
