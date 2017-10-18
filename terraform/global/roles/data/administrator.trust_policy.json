@@ -6,7 +6,11 @@
       "Principal": {
         "AWS": "arn:aws:iam::${account_id}:root"
       },
-      "Action": "sts:AssumeRole"
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "BoolIfExists": { "aws:MultiFactorAuthPresent": true },
+        "NumericLessThan": { "aws:MultiFactorAuthAge": "3600" }
+      }
     }
   ]
 }
