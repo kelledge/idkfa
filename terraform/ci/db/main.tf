@@ -2,11 +2,17 @@ provider "aws" {
   region = "us-east-1"
 }
 
+data "aws_kms_alias" "account" {
+  name = "alias/account-key"
+}
+
 terraform {
   backend "s3" {
-    bucket = "state.kaak.us"
-    key    = "terraform/db.tfstate"
-    region = "us-east-1"
+    bucket     = "state.kaak.us"
+    key        = "terraform/db.tfstate"
+    region     = "us-east-1"
+    encrypt    = true
+    kms_key_id = "6f397946-c569-44d6-8f1a-88ef2d397f03"
   }
 }
 
