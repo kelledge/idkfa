@@ -28,3 +28,15 @@ resource "aws_sns_topic" "info" {
   name = "info"
   display_name = "Information events"
 }
+
+output "critical_arn" {
+  value = "${aws_sns_topic.critical.arn}"
+}
+
+output "warn_arn" {
+  value = "${aws_sns_topic.warn.arn}"
+}
+
+output "info_arn" {
+  value = "${aws_sns_topic.info.arn}"
+}
