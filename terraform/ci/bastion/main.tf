@@ -20,6 +20,26 @@ data "terraform_remote_state" "network" {
   }
 }
 
+data "terraform_remote_state" "dns" {
+  backend = "s3"
+
+  config {
+    bucket = "state.kaak.us"
+    key    = "terraform/ci/dns.tfstate"
+    region = "us-east-1"
+  }
+}
+
+data "terraform_remote_state" "topics" {
+  backend = "s3"
+
+  config {
+    bucket = "state.kaak.us"
+    key    = "terraform/global/topics.tfstate"
+    region = "us-east-1"
+  }
+}
+
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -59,6 +79,14 @@ module "bastion" {
   environment = "ci"
 }
 
+output "instance_id" {
+  value = "${module.bastion.instance_id}"
+}
+
 output "external_ip" {
   value = "${module.bastion.external_ip}"
+}
+
+output "internal_ip" {
+  value = "${module.bastion.internal_ip}"
 }
