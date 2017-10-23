@@ -12,6 +12,15 @@ Install:
 sudo apt-get update && sudo apt-get install virtualenvwrapper
 ```
 
+### AWS Sudo
+sudo-like utility to manage AWS credentials
+Site: https://github.com/makethunder/awsudo
+Used to gain access to the administrator role when running CLI actions.
+Install:
+```
+pip install git+https://github.com/makethunder/awsudo.git
+```
+
 ### AWS CLI
 Universal Command Line Interface for Amazon Web Services
 Site: https://github.com/aws/aws-cli
@@ -28,7 +37,7 @@ Install:
 pip install aws-shell
 ```
 
-## AWS CLI MFA Setup
+### AWS CLI MFA Setup
 ```
 [profile admin]
 role_arn = arn:aws:iam::<account>:role/<role>

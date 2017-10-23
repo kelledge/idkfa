@@ -8,3 +8,4 @@ Global/Organization level resources
  * DNS Zones
  * Topics
  * Encryption Keys
+ * Container Registry (WIP)
