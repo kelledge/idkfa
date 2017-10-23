@@ -79,6 +79,33 @@ module "bastion" {
   environment = "ci"
 }
 
+resource "aws_route53_record" "bastion" {
+  zone_id = "${data.terraform_remote_state.dns.zone_id}"
+  name    = "bastion.ci.kaak.us"
+  type    = "A"
+  ttl     = "300"
+  records = ["${module.bastion.external_ip}"]
+}
+
+resource "aws_cloudwatch_metric_alarm" "bastion" {
+  alarm_name          = "bastion"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "3"
+  metric_name         = "StatusCheckFailed"
+  namespace           = "AWS/EC2"
+  period              = "60"
+  statistic           = "Maximum"
+  threshold           = "1"
+
+  dimensions {
+    InstanceId = "${module.bastion.instance_id}"
+  }
+
+  alarm_description = "This metric monitors bastion ec2 status check"
+  alarm_actions     = ["${data.terraform_remote_state.topics.critical_arn}"]
+}
+
+
 output "instance_id" {
   value = "${module.bastion.instance_id}"
 }
