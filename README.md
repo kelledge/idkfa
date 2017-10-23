@@ -26,8 +26,24 @@ Needs curating and trimming. Just a mind-dump.
 ## Background
 The opinions and choices reflected by this recipe are informed through over 4
 years of operation within a startup setting. I wanted to encode the choices and
-opinions I have developed over this time frame in to an off-the-shelf that is
-approachable for any wanted to deploy a technology product.
+opinions I have developed over this time frame in to an off-the-shelf product
+hat is approachable for anyone wanting to deploy a technology product.
+
+## Current Problems
+
+### Module Dependencies
+There are currently a good number of modules. Perhaps too many. The principle
+challenge with this many modules is managing their dependencies, and likewise
+the order in which they must be instantiated. For instance, it is not
+immediately obvious that global/users must be created before global/groups, nor
+that global/topics must be created before global/alarms. The number of modules
+is also a bit annoying at create time.
+
+### Configuration
+A number of important values are currently hard-coded. Especially region and
+state buckets. I am not certain how I want to go about addressing this at the
+moment, except to add a global configuration file. This will run in to problems
+with configurations wishing to diversify among multiple regions.
 
 ## Terraform
 https://github.com/awslabs/apn-blog
@@ -55,6 +71,7 @@ use remote state
  * Root account API access (automatically deleted after bootstrap)
  * Root account MFA. Save a copy of the QR code or the secret key in a secure place
  * Activate IAM Access to Billing Information
+ * Enable "Receive Billing Alerts" under preferences
 
 ## Audit
  * CloudTrail is enabled for all regions to provide a record of API actions
