@@ -1,0 +1,93 @@
+#!/usr/bin/env python
+"""
+CLI management of a user's virtual MFA device
+
+TODO:
+ * general error handling
+ * remove actions
+ * better setup workflow information
+ * qr code displayed in terminal?
+ * provide suggestions for how to store the qr code image and seed
+ * output ottp:// url for easier storage
+"""
+import sys
+import argparse
+import pprint
+import os
+
+import boto3
+
+
+def get_user(iam, identity):
+    res = iam.list_users(PathPrefix='/')
+    users = res['Users']
+
+    user = [u for u in users if u['UserId'] == identity['UserId']]
+    if len(user) != 1:
+        return 1
+
+    return user[0]
+
+
+def show(iam, user):
+    res = iam.list_virtual_mfa_devices()
+    devices = res['VirtualMFADevices']
+
+    device = [d for d in devices if d['User']['UserId'] == user['UserId']]
+    if len(device) == 0:
+        return 1
+
+    device = device[0]
+
+    print("SerialNumber: {}".format(device['SerialNumber']))
+    print("EnableDate: {}".format(device['EnableDate']))
+
+
+def setup(iam, user):
+    res = iam.create_virtual_mfa_device(
+        Path='/',
+        VirtualMFADeviceName=user['UserName']
+    )
+    mfa = res['VirtualMFADevice']
+    qr_code_path = os.path.abspath('./qrcode.png')
+
+    with open(qr_code_path, 'w') as handle:
+        handle.write(mfa['QRCodePNG'])
+
+    print('Scan the QR code found at {}'.format(qr_code_path))
+    print('Sync Device: Enter Two OTTPs')
+    authentication_code_1 = raw_input('Enter AuthenticationCode1: ')
+    authentication_code_2 = raw_input('Enter AuthenticationCode2: ')
+
+    iam.enable_mfa_device(
+      UserName=user['UserName'],
+      SerialNumber=mfa['SerialNumber'],
+      AuthenticationCode1=authentication_code_1,
+      AuthenticationCode2=authentication_code_2
+    )
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(prog='mfa')
+    sp = parser.add_subparsers()
+
+    sp_show = sp.add_parser('show', help='Show virtual MFA device details')
+    sp_show.set_defaults(func=show)
+
+    sp_setup = sp.add_parser('setup', help='Setup a virtual MFA device ')
+    sp_setup.set_defaults(func=setup)
+
+    return parser.parse_args()
+
+
+def main(args, iam, sts):
+    identity = sts.get_caller_identity()
+    user = get_user(iam, identity)
+    return args.func(iam, user)
+
+
+if __name__ == '__main__':
+    iam = boto3.client('iam')
+    sts = boto3.client('sts')
+    args = parse_args()
+    sys.exit(main(args, iam, sts))
