@@ -41,6 +41,11 @@ following are essentials.
  * Monitoring and Alerting
  * Service Secret Management
 
+## Out of Scope
+List of things considered, but intentionally left out.
+ * Multi-region support: I don't believe this is a problem for most small
+   companies. 
+
 ## Current Problems
 
 ### Todo
@@ -54,6 +59,8 @@ following are essentials.
    like the CI build server, or ticket management server. Many of these services
    will likely want access to AWS resources, and therefore require an instance
    profile granting access.
+ * Encouraging use of ELB and ACM
+ * Encouring use of CloudWatch logs. Both for ingestion and review.
 
 ### Module Dependencies
 There are currently a good number of modules. Perhaps too many. The principle
@@ -100,6 +107,10 @@ http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_examples.html
  * Administrators
 
 ## Ideas
+
+### Working in budget planning and review for AWS and attached services.
+Users within the billing group should receive this information and regularly
+review it.
 
 ### EBS Snapshot Scheduler
 Your data should mostly live in managed services like RDS. Your backup and
