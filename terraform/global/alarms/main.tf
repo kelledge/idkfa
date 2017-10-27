@@ -19,3 +19,13 @@ data "terraform_remote_state" "topics" {
     region = "us-east-1"
   }
 }
+
+data "terraform_remote_state" "audit" {
+  backend = "s3"
+
+  config {
+    bucket = "state.kaak.us"
+    key    = "terraform/global/audit.tfstate"
+    region = "us-east-1"
+  }
+}
