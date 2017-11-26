@@ -11,7 +11,7 @@ terraform {
 }
 
 resource "aws_route53_zone" "organization" {
-  name = "kaak.us"
+  name = "kevinelledge.com"
   comment = "Organization domain"
 }
 

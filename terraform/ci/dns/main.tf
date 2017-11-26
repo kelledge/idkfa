@@ -21,7 +21,7 @@ data "terraform_remote_state" "dns" {
 }
 
 resource "aws_route53_zone" "ci" {
-  name = "ci.kaak.us"
+  name = "ci.kevinelledge.com"
   comment = "CI domain"
 
   tags {
@@ -34,7 +34,7 @@ resource "aws_route53_zone" "ci" {
 */
 resource "aws_route53_record" "ci_ns" {
   zone_id = "${data.terraform_remote_state.dns.zone_id}"
-  name    = "ci.kaak.us"
+  name    = "ci.kevinelledge.com"
   type    = "NS"
   ttl     = "30"
 
