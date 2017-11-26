@@ -9,7 +9,7 @@
       "Action": "sts:AssumeRole",
       "Condition": {
         "BoolIfExists": { "aws:MultiFactorAuthPresent": true },
-        "NumericLessThan": { "aws:MultiFactorAuthAge": "3600" }
+        "NumericLessThan": { "aws:MultiFactorAuthAge": "28800" }
       }
     }
   ]
