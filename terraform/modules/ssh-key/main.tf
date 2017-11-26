@@ -17,9 +17,11 @@ resource "null_resource" "key" {
   #   cluster_instance_ids = "${join(",", aws_instance.cluster.*.id)}"
   # }
 
+  # FIXME: This is only executed *after* variables are interpolated. This means
+  # variable references get an empty string, or no file errors on first run.
   provisioner "local-exec" {
     # provision SSH key
-    command = "ssh-keygen -t rsa -b 2048 -C '${var.key_name}' -f ${local.key_path_sec}"
+    command = "ssh-keygen -t rsa -b 2048 -N '' -C '${var.key_name}' -f ${local.key_path_sec}"
   }
 }
 
