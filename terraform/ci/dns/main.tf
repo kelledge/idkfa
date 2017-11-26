@@ -46,6 +46,19 @@ resource "aws_route53_record" "ci_ns" {
   ]
 }
 
+/*
+* NOTE: I am leaving these with the zone for now, but it may make more sense to
+* locate these records closer to the ACM references.
+*/
+resource "aws_route53_record" "acm_validation" {
+  zone_id = "${aws_route53_zone.ci.zone_id}"
+  name    = "_4c94d5d5bb364e3f81ce04aec27bd3c8.ci.kevinelledge.com"
+  type    = "CNAME"
+  ttl     = "5"
+
+  records        = ["_a17bf2f402f079a47f7daf6828e00a61.acm-validations.aws"]
+}
+
 output "zone_id" {
   value = "${aws_route53_zone.ci.zone_id}"
 }

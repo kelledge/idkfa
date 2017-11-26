@@ -15,6 +15,15 @@ resource "aws_route53_zone" "organization" {
   comment = "Organization domain"
 }
 
+resource "aws_route53_record" "acm_validation" {
+  zone_id = "${aws_route53_zone.organization.zone_id}"
+  name    = "_bffe768ebad1b637fb50818074538bd8.kevinelledge.com"
+  type    = "CNAME"
+  ttl     = "5"
+
+  records        = ["_07a1e838220548d494b22e8570b3b1e1.acm-validations.aws"]
+}
+
 output "zone_id" {
   value = "${aws_route53_zone.organization.zone_id}"
 }
