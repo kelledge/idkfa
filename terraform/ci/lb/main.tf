@@ -31,10 +31,10 @@ resource "aws_lb" "ingress" {
   ]
   subnets         = ["${data.terraform_remote_state.network.external_subnets}"]
 
-  # There are many customer-facing details associated with this resource, like
+  # There are many customer-facing details associated with this resource like
   # DNS records and SSL certificates. When we destroy it, we want to be sure it
   # is on purpose.
-  enable_deletion_protection = false
+  enable_deletion_protection = true
 
   # TODO: Enable access logs
   # access_logs {
