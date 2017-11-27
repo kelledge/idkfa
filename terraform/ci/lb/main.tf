@@ -47,8 +47,11 @@ resource "aws_lb" "ingress" {
   }
 }
 
-# TODO: Make this host a HTTP -> HTTPS redirect based on X-Forwarded-Proto
-resource "aws_lb_target_group" "default" {
+/*
+* HTTP
+* TODO: Make this host a HTTP -> HTTPS redirect based on X-Forwarded-Proto
+*/
+resource "aws_lb_target_group" "default_http" {
   name     = "default-tg"
   port     = 80
   protocol = "HTTP"
@@ -65,13 +68,54 @@ resource "aws_lb_listener" "http" {
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = "${aws_lb_target_group.default.arn}"
+    target_group_arn = "${aws_lb_target_group.default_http.arn}"
     type             = "forward"
   }
 
   lifecycle {
     create_before_destroy = true
   }
+}
+
+/*
+* HTTPS
+*/
+data "aws_acm_certificate" "ci" {
+  domain   = "kevinelledge.com"
+  statuses = ["ISSUED"]
+}
+
+resource "aws_lb_target_group" "default_https" {
+  name     = "default-https-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = "${data.terraform_remote_state.network.vpc_id}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_lb_listener" "https" {
+  load_balancer_arn = "${aws_lb.ingress.arn}"
+  port              = 443
+  protocol          = "HTTPS"
+
+  ssl_policy        = "ELBSecurityPolicy-2015-05"
+  certificate_arn   = "${data.aws_acm_certificate.ci.arn}"
+
+  default_action {
+    target_group_arn = "${aws_lb_target_group.default_https.arn}"
+    type             = "forward"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+output "zone_id" {
+  value = "${aws_lb.ingress.zone_id}"
 }
 
 output "arn" {
@@ -86,6 +130,14 @@ output "http_listener_arn" {
   value = "${aws_lb_listener.http.arn}"
 }
 
+output "https_listener_arn" {
+  value = "${aws_lb_listener.https.arn}"
+}
+
 output "http_listener_default_target_group_arn" {
-  value = "${aws_lb_target_group.default.arn}"
+  value = "${aws_lb_target_group.default_http.arn}"
+}
+
+output "https_listener_default_target_group_arn" {
+  value = "${aws_lb_target_group.default_https.arn}"
 }
